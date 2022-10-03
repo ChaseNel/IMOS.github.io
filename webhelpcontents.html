@@ -1,0 +1,480 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<title>New Help</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css"> 
+<!--
+body{margin: 5px;} 
+.selected {font-weight: normal;background-color: #E2E2E2;padding:0px,2px,0px,2px;}
+.unselected { font-weight: normal;padding:0px,2px,0px,2px;}
+.hand { cursor: hand; }
+.p {height: 16px;width: 16px;vertical-align: middle;border: 0;}
+div,body { font-family: Tahoma, Verdana; font-size: 11px; }
+A:link {text-decoration: none; color:#000000}
+A:visited {text-decoration: none; color: #000000}
+A:active {text-decoration: none; color: #000000 }
+A:hover {text-decoration: none; color: #FF0000 }
+
+-->
+</style>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var cl,pn,pm,bl;
+var path = 'icons/';
+var pos = 0;
+var icon;
+var tar = 'content';
+var display;
+var imgi;
+var AutoCollapse;
+var LastSelected = -1;
+var loaded = false;
+var max;
+var divlist;
+
+function SetEnv(v,a){
+
+if(v==0){ 
+	pn = [['daplus.gif','daminus.gif'],['tplus.gif','tminus.gif'],['uaplus.gif','uaminus.gif'],['splus.gif','sminus.gif']];
+	PreloadImg('downangle.gif','tshaped.gif','upangle.gif','sline.gif','daplus.gif','daminus.gif','tplus.gif','tminus.gif','uaplus.gif','uaminus.gif','splus.gif','sminus.gif','blank.gif','line.gif');
+}else{
+	pn = [['plus.gif','minus.gif']];
+	PreloadImg('plus.gif','minus.gif','blank.gif');
+
+}
+AutoCollapse = a;
+}
+
+ function PreloadImg(){
+if (document.images) { 
+	var imgs = PreloadImg.arguments; 
+	var pload = new Array();
+	for (var i=0; i<imgs.length; i++) { 
+		pload[i] = new Image; 
+		pload[i].src = path + imgs[i]; 
+	} 
+} 
+ } 
+
+function get(o){
+var x;
+if(document.all) x=document.all[o]; 
+if(document.getElementById) x=document.getElementById(o);
+
+return x;
+}
+
+
+function pnImg(img){
+var i,j;
+for(i=0;i<=3;i++){
+	for(j=0;j<=1;j++){
+	if(img.substr(img.lastIndexOf('/') + 1)== pn[i][j]){
+		return i;
+	}
+	}
+}
+}
+function icon(img){
+var f;
+f = img.substr(img.lastIndexOf('/') + 1);
+if( f=='1.gif' || f=='2.gif'){
+	return ['1.gif','2.gif'];
+}
+if( f=='3.gif' || f=='4.gif'){
+	return ['3.gif','4.gif'];
+}
+if( f=='5.gif' || f=='6.gif'){
+	return ['5.gif','6.gif'];
+}
+if( f=='7.gif' || f=='8.gif'){
+	return ['7.gif','8.gif'];
+}
+return [f,f];
+}
+
+function show(id){
+get('d' + id).style.display='block';
+if(get('imgn' + id )) get('imgn' + id ).src= path + pn[pnImg(get('imgn' + id ).src)][1];
+get('img' + id ).src= path + icon(get('img' + id ).src)[1];
+
+}
+
+function collapse(id){
+get('d' + id ).style.display='none';
+if(get('imgn' + id )) get('imgn' + id ).src= path + pn[pnImg(get('imgn' + id ).src)][0];
+get('img' + id ).src= path + icon(get('img' + id ).src)[0];
+
+}
+
+function collapseAll(){
+var i;
+var o;
+for(i=0;i<=divlist.length-1;i++){
+	if(o=get('d' + divlist[i])){
+		if(o.style.display!='none'){ 
+			collapse(divlist[i]);
+		}
+	}
+}
+}
+
+function showAll(){
+var i;
+var o;
+for(i=0;i<=divlist.length-1;i++){
+	if(o=get('d' + divlist[i])){
+		if(o.style.display!='block'){ 
+			show(divlist[i]);
+		}
+	}
+}
+}
+
+function unselectAll(){
+var i=0;
+while(get("l" + i)){
+	get("l" + i).className = "unselected";
+	i++;
+}
+}
+
+function clickNode(index){
+var e;
+
+e = get("l" + index);
+if(e==null) return;
+e = e.parentNode;
+if(e.nodeName == 'A'){
+	if(e.href!= window.location.href + '#'){
+		parent.parent.content.location.href = e.href;
+	}else{
+		selectNode(index);
+	}
+	e.onclick;
+}
+}
+
+function showParent(ele){
+var e;
+e = ele.parentNode;
+
+if(e==null) return;
+
+if(e.nodeName == 'DIV'){
+	if(e.id!='') show(e.id.substring(1,e.id.length ));
+}else if(e.nodeName == 'A'){
+
+}
+showParent(e);
+}
+
+function showNode(index){
+showParent(get("l" + index));
+LinkClick(index);
+}
+
+function selectNode(index){
+if(LastSelected!=index){
+//collapseAll();
+showParent(get("l" + index));
+LinkClick(index);
+get('l' + index).scrollIntoView(true);
+
+
+//alert(get('l' + index).offsetHeight + '|' + document.body.clientHeight + '|' + document.body.offsetHeight);
+window.scrollTo(0,document.body.scrollTop); // - document.body.clientHeight /3);
+}
+}
+
+
+function NodeClick(id){
+if(get('d' + id ).style.display=='none'){
+	show(id);
+}else{
+	collapse(id);
+}
+return false;
+}
+
+function LinkDblClick(id){
+if(!AutoCollapse){
+	if(get('d' + id ).style.display=='none'){
+		show(id);
+	}else{
+		collapse(id);
+	}
+}
+return false;
+}
+
+function LinkClick(index,hasChild,r){
+if(AutoCollapse && hasChild){
+	if(get('d' + index ).style.display=='none'){
+		collapseAll()
+		showParent(get('l' + index));
+		show(index);
+	}else{
+		collapseAll()
+		showParent(get('l' + index));	
+		collapse(index);
+	}
+}
+if(LastSelected!=-1){
+	get('l' + LastSelected).className = "unselected";
+}
+get('l' + index).className = "selected";
+LastSelected = index;
+return r;
+}
+
+function body_onmousemove(event){
+if(typeof(document.body.scrollTop)!='undefined'){
+if(parseInt(event.clientX)<5){
+window.scroll(0,document.body.scrollTop);}}
+if(typeof(window.scrollY)!='undefined'){
+if(parseInt(event.clientX)<5){
+window.scrollTo(0,window.scrollY);}}
+}
+
+window.defaultStatus = '';
+
+function body_onload(){
+get('loading').style.display='none';
+loaded = true;
+if(parent.parent.content.document.readyState){
+	if(parent.parent.content.document.readyState == 'complete'){
+		try{parent.parent.content.syn();}catch(e){};
+	}
+}else{
+	if(parent.parent.contentLoaded){
+		try{parent.parent.content.syn();}catch(e){};
+	}
+}
+}
+
+//-->
+</SCRIPT>
+<script language="JavaScript" src="languages.js"></script>
+</head>
+
+<body bgcolor="#FFFFFF" onmousemove="body_onmousemove(event);" onload="body_onload();">
+<div id="loading"><font color="#FF0000" size="1"> Loading table of contents... 
+</font><br><br></div>
+<script>SetEnv(0,false)</script><div><nobr><img src="icons/downangle.gif" class="p"><a href="pages/imos-help-guide.html" onclick="return LinkClick('0',false,true)" target="content" title="IMOS Help Guide" onmousemove="window.status='IMOS Help Guide'"><img src="icons/11.gif" class="p"> <span id="l0" class="unselected">IMOS Help Guide</span></a></nobr></div>
+<div><nobr><a href="#" onClick="return NodeClick('1')"><img id="imgn1" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('1',true,false)" onDblClick="return LinkDblClick('1')" target="content" title="Overview" onmousemove="window.status='Overview'"><img id="img1" src="icons/1.gif" class="p"> <span id="l1" class="unselected">Overview</span></a></nobr></div>
+<div id="d1" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/introduction.html" onclick="return LinkClick('2',false,true)" target="content" title="Introduction" onmousemove="window.status='Introduction'"><img src="icons/11.gif" class="p"> <span id="l2" class="unselected">Introduction</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('3')"><img id="imgn3" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('3',true,false)" onDblClick="return LinkDblClick('3')" target="content" title="Employee Instructions" onmousemove="window.status='Employee Instructions'"><img id="img3" src="icons/1.gif" class="p"> <span id="l3" class="unselected">Employee Instructions</span></a></nobr></div>
+<div id="d3" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-employee.html" onclick="return LinkClick('4',false,true)" target="content" title="Add Employee" onmousemove="window.status='Add Employee'"><img src="icons/11.gif" class="p"> <span id="l4" class="unselected">Add Employee</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-employee.html" onclick="return LinkClick('5',false,true)" target="content" title="Update Employee" onmousemove="window.status='Update Employee'"><img src="icons/11.gif" class="p"> <span id="l5" class="unselected">Update Employee</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-employee.html" onclick="return LinkClick('6',false,true)" target="content" title="Search and Delete Employee" onmousemove="window.status='Search and Delete Employee'"><img src="icons/11.gif" class="p"> <span id="l6" class="unselected">Search and Delete Employee</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('7')"><img id="imgn7" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('7',true,false)" onDblClick="return LinkDblClick('7')" target="content" title="Upload employee Contract" onmousemove="window.status='Upload employee Contract'"><img id="img7" src="icons/1.gif" class="p"> <span id="l7" class="unselected">Upload employee Contract</span></a></nobr></div>
+<div id="d7" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description.html" onclick="return LinkClick('8',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l8" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps.html" onclick="return LinkClick('9',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l9" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites.html" onclick="return LinkClick('10',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l10" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise.html" onclick="return LinkClick('11',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l11" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary.html" onclick="return LinkClick('12',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l12" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('13',false,true)" target="content" title="Complete Employee Attendance" onmousemove="window.status='Complete Employee Attendance'"><img src="icons/11.gif" class="p"> <span id="l13" class="unselected">Complete Employee Attendance</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-employee-attendance.html" onclick="return LinkClick('14',false,true)" target="content" title="Update Employee Attendance" onmousemove="window.status='Update Employee Attendance'"><img src="icons/11.gif" class="p"> <span id="l14" class="unselected">Update Employee Attendance</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-employee-attendance.html" onclick="return LinkClick('15',false,true)" target="content" title="Search and Delete Employee Attendance" onmousemove="window.status='Search and Delete Employee Attendance'"><img src="icons/11.gif" class="p"> <span id="l15" class="unselected">Search and Delete Employee Attendance</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('16')"><img id="imgn16" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('16',true,false)" onDblClick="return LinkDblClick('16')" target="content" title="User Instructions" onmousemove="window.status='User Instructions'"><img id="img16" src="icons/1.gif" class="p"> <span id="l16" class="unselected">User Instructions</span></a></nobr></div>
+<div id="d16" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('17')"><img id="imgn17" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('17',true,false)" onDblClick="return LinkDblClick('17')" target="content" title="Log In" onmousemove="window.status='Log In'"><img id="img17" src="icons/1.gif" class="p"> <span id="l17" class="unselected">Log In</span></a></nobr></div>
+<div id="d17" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description1.html" onclick="return LinkClick('18',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l18" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('19',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l19" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites1.html" onclick="return LinkClick('20',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l20" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise1.html" onclick="return LinkClick('21',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l21" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary1.html" onclick="return LinkClick('22',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l22" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('23')"><img id="imgn23" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('23',true,false)" onDblClick="return LinkDblClick('23')" target="content" title="Log Out" onmousemove="window.status='Log Out'"><img id="img23" src="icons/1.gif" class="p"> <span id="l23" class="unselected">Log Out</span></a></nobr></div>
+<div id="d23" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description2.html" onclick="return LinkClick('24',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l24" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps2.html" onclick="return LinkClick('25',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l25" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites2.html" onclick="return LinkClick('26',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l26" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise2.html" onclick="return LinkClick('27',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l27" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('28',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l28" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('29')"><img id="imgn29" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('29',true,false)" onDblClick="return LinkDblClick('29')" target="content" title="Change Password" onmousemove="window.status='Change Password'"><img id="img29" src="icons/1.gif" class="p"> <span id="l29" class="unselected">Change Password</span></a></nobr></div>
+<div id="d29" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description3.html" onclick="return LinkClick('30',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l30" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps3.html" onclick="return LinkClick('31',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l31" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites3.html" onclick="return LinkClick('32',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l32" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise3.html" onclick="return LinkClick('33',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l33" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('34',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l34" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('35')"><img id="imgn35" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('35',true,false)" onDblClick="return LinkDblClick('35')" target="content" title="Forgot Password" onmousemove="window.status='Forgot Password'"><img id="img35" src="icons/1.gif" class="p"> <span id="l35" class="unselected">Forgot Password</span></a></nobr></div>
+<div id="d35" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description4.html" onclick="return LinkClick('36',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l36" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps4.html" onclick="return LinkClick('37',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l37" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites4.html" onclick="return LinkClick('38',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l38" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('39',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l39" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary4.html" onclick="return LinkClick('40',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l40" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-user.html" onclick="return LinkClick('41',false,true)" target="content" title="Add New User" onmousemove="window.status='Add New User'"><img src="icons/11.gif" class="p"> <span id="l41" class="unselected">Add New User</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-user.html" onclick="return LinkClick('42',false,true)" target="content" title="Update User" onmousemove="window.status='Update User'"><img src="icons/11.gif" class="p"> <span id="l42" class="unselected">Update User</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('43',false,true)" target="content" title="Search and Delete User" onmousemove="window.status='Search and Delete User'"><img src="icons/11.gif" class="p"> <span id="l43" class="unselected">Search and Delete User</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-user-role.html" onclick="return LinkClick('44',false,true)" target="content" title="Add New User Role" onmousemove="window.status='Add New User Role'"><img src="icons/11.gif" class="p"> <span id="l44" class="unselected">Add New User Role</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-user-role.html" onclick="return LinkClick('45',false,true)" target="content" title="Update User Role" onmousemove="window.status='Update User Role'"><img src="icons/11.gif" class="p"> <span id="l45" class="unselected">Update User Role</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-user-role.html" onclick="return LinkClick('46',false,true)" target="content" title="Search and Delete User Role" onmousemove="window.status='Search and Delete User Role'"><img src="icons/11.gif" class="p"> <span id="l46" class="unselected">Search and Delete User Role</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('47')"><img id="imgn47" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('47',true,false)" onDblClick="return LinkDblClick('47')" target="content" title="Materials Instructions" onmousemove="window.status='Materials Instructions'"><img id="img47" src="icons/1.gif" class="p"> <span id="l47" class="unselected">Materials Instructions</span></a></nobr></div>
+<div id="d47" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-material.html" onclick="return LinkClick('48',false,true)" target="content" title="Add New Material" onmousemove="window.status='Add New Material'"><img src="icons/11.gif" class="p"> <span id="l48" class="unselected">Add New Material</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-material.html" onclick="return LinkClick('49',false,true)" target="content" title="Update Material" onmousemove="window.status='Update Material'"><img src="icons/11.gif" class="p"> <span id="l49" class="unselected">Update Material</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('50',false,true)" target="content" title="Search and Delete Material" onmousemove="window.status='Search and Delete Material'"><img src="icons/11.gif" class="p"> <span id="l50" class="unselected">Search and Delete Material</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-material-types.html" onclick="return LinkClick('51',false,true)" target="content" title="Add New Material Types" onmousemove="window.status='Add New Material Types'"><img src="icons/11.gif" class="p"> <span id="l51" class="unselected">Add New Material Types</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-material-types.html" onclick="return LinkClick('52',false,true)" target="content" title="Update Material Types" onmousemove="window.status='Update Material Types'"><img src="icons/11.gif" class="p"> <span id="l52" class="unselected">Update Material Types</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-material-types.html" onclick="return LinkClick('53',false,true)" target="content" title="Search and Delete Material Types" onmousemove="window.status='Search and Delete Material Types'"><img src="icons/11.gif" class="p"> <span id="l53" class="unselected">Search and Delete Material Types</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('54')"><img id="imgn54" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('54',true,false)" onDblClick="return LinkDblClick('54')" target="content" title="Equipment Instructions" onmousemove="window.status='Equipment Instructions'"><img id="img54" src="icons/1.gif" class="p"> <span id="l54" class="unselected">Equipment Instructions</span></a></nobr></div>
+<div id="d54" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-equipment.html" onclick="return LinkClick('55',false,true)" target="content" title="Add New Equipment" onmousemove="window.status='Add New Equipment'"><img src="icons/11.gif" class="p"> <span id="l55" class="unselected">Add New Equipment</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-equipment.html" onclick="return LinkClick('56',false,true)" target="content" title="Update Equipment" onmousemove="window.status='Update Equipment'"><img src="icons/11.gif" class="p"> <span id="l56" class="unselected">Update Equipment</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-equipment.html" onclick="return LinkClick('57',false,true)" target="content" title="Search and Delete Equipment" onmousemove="window.status='Search and Delete Equipment'"><img src="icons/11.gif" class="p"> <span id="l57" class="unselected">Search and Delete Equipment</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('58')"><img id="imgn58" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('58',true,false)" onDblClick="return LinkDblClick('58')" target="content" title="Equipment Check-in" onmousemove="window.status='Equipment Check-in'"><img id="img58" src="icons/1.gif" class="p"> <span id="l58" class="unselected">Equipment Check-in</span></a></nobr></div>
+<div id="d58" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description5.html" onclick="return LinkClick('59',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l59" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps5.html" onclick="return LinkClick('60',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l60" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites5.html" onclick="return LinkClick('61',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l61" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise5.html" onclick="return LinkClick('62',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l62" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('63',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l63" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('64')"><img id="imgn64" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('64',true,false)" onDblClick="return LinkDblClick('64')" target="content" title="Equipment Check-out" onmousemove="window.status='Equipment Check-out'"><img id="img64" src="icons/1.gif" class="p"> <span id="l64" class="unselected">Equipment Check-out</span></a></nobr></div>
+<div id="d64" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description6.html" onclick="return LinkClick('65',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l65" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps6.html" onclick="return LinkClick('66',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l66" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites6.html" onclick="return LinkClick('67',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l67" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('68',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l68" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary6.html" onclick="return LinkClick('69',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l69" class="unselected">Summary</span></a></nobr></div>
+</div></div><div><nobr><a href="#" onClick="return NodeClick('70')"><img id="imgn70" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('70',true,false)" onDblClick="return LinkDblClick('70')" target="content" title="Vehicle Instructions" onmousemove="window.status='Vehicle Instructions'"><img id="img70" src="icons/1.gif" class="p"> <span id="l70" class="unselected">Vehicle Instructions</span></a></nobr></div>
+<div id="d70" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-vehicle.html" onclick="return LinkClick('71',false,true)" target="content" title="Add New Vehicle" onmousemove="window.status='Add New Vehicle'"><img src="icons/11.gif" class="p"> <span id="l71" class="unselected">Add New Vehicle</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-vehicle.html" onclick="return LinkClick('72',false,true)" target="content" title="Update Vehicle" onmousemove="window.status='Update Vehicle'"><img src="icons/11.gif" class="p"> <span id="l72" class="unselected">Update Vehicle</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-vehicle.html" onclick="return LinkClick('73',false,true)" target="content" title="Search and Delete Vehicle" onmousemove="window.status='Search and Delete Vehicle'"><img src="icons/11.gif" class="p"> <span id="l73" class="unselected">Search and Delete Vehicle</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-vehicle-type.html" onclick="return LinkClick('74',false,true)" target="content" title="Add New Vehicle Type" onmousemove="window.status='Add New Vehicle Type'"><img src="icons/11.gif" class="p"> <span id="l74" class="unselected">Add New Vehicle Type</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-vehicle-type.html" onclick="return LinkClick('75',false,true)" target="content" title="Update Vehicle Type" onmousemove="window.status='Update Vehicle Type'"><img src="icons/11.gif" class="p"> <span id="l75" class="unselected">Update Vehicle Type</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-vehicle-type.html" onclick="return LinkClick('76',false,true)" target="content" title="Search and Delete Vehicle Type" onmousemove="window.status='Search and Delete Vehicle Type'"><img src="icons/11.gif" class="p"> <span id="l76" class="unselected">Search and Delete Vehicle Type</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('77')"><img id="imgn77" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('77',true,false)" onDblClick="return LinkDblClick('77')" target="content" title="Assign Vehicle" onmousemove="window.status='Assign Vehicle'"><img id="img77" src="icons/1.gif" class="p"> <span id="l77" class="unselected">Assign Vehicle</span></a></nobr></div>
+<div id="d77" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description7.html" onclick="return LinkClick('78',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l78" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps7.html" onclick="return LinkClick('79',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l79" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites7.html" onclick="return LinkClick('80',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l80" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise7.html" onclick="return LinkClick('81',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l81" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary7.html" onclick="return LinkClick('82',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l82" class="unselected">Summary</span></a></nobr></div>
+</div></div><div><nobr><a href="#" onClick="return NodeClick('83')"><img id="imgn83" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('83',true,false)" onDblClick="return LinkDblClick('83')" target="content" title="Reports Instructions" onmousemove="window.status='Reports Instructions'"><img id="img83" src="icons/1.gif" class="p"> <span id="l83" class="unselected">Reports Instructions</span></a></nobr></div>
+<div id="d83" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('84')"><img id="imgn84" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('84',true,false)" onDblClick="return LinkDblClick('84')" target="content" title="Generate Material Request Report" onmousemove="window.status='Generate Material Request Report'"><img id="img84" src="icons/1.gif" class="p"> <span id="l84" class="unselected">Generate Material Request Report</span></a></nobr></div>
+<div id="d84" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description8.html" onclick="return LinkClick('85',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l85" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps8.html" onclick="return LinkClick('86',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l86" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites8.html" onclick="return LinkClick('87',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l87" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise8.html" onclick="return LinkClick('88',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l88" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary8.html" onclick="return LinkClick('89',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l89" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('90')"><img id="imgn90" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('90',true,false)" onDblClick="return LinkDblClick('90')" target="content" title="Generate Project Bill of Quantity Report" onmousemove="window.status='Generate Project Bill of Quantity Report'"><img id="img90" src="icons/1.gif" class="p"> <span id="l90" class="unselected">Generate Project Bill of Quantity Report</span></a></nobr></div>
+<div id="d90" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description9.html" onclick="return LinkClick('91',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l91" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps9.html" onclick="return LinkClick('92',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l92" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites9.html" onclick="return LinkClick('93',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l93" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise9.html" onclick="return LinkClick('94',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l94" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary9.html" onclick="return LinkClick('95',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l95" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('96')"><img id="imgn96" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('96',true,false)" onDblClick="return LinkDblClick('96')" target="content" title="Generate Project Report" onmousemove="window.status='Generate Project Report'"><img id="img96" src="icons/1.gif" class="p"> <span id="l96" class="unselected">Generate Project Report</span></a></nobr></div>
+<div id="d96" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description10.html" onclick="return LinkClick('97',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l97" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps10.html" onclick="return LinkClick('98',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l98" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites10.html" onclick="return LinkClick('99',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l99" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise10.html" onclick="return LinkClick('100',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l100" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary10.html" onclick="return LinkClick('101',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l101" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('102')"><img id="imgn102" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('102',true,false)" onDblClick="return LinkDblClick('102')" target="content" title="Generate Equipment Check Report" onmousemove="window.status='Generate Equipment Check Report'"><img id="img102" src="icons/1.gif" class="p"> <span id="l102" class="unselected">Generate Equipment Check Report</span></a></nobr></div>
+<div id="d102" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description11.html" onclick="return LinkClick('103',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l103" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('104',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l104" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites11.html" onclick="return LinkClick('105',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l105" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise11.html" onclick="return LinkClick('106',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l106" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary11.html" onclick="return LinkClick('107',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l107" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('108')"><img id="imgn108" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('108',true,false)" onDblClick="return LinkDblClick('108')" target="content" title="Generate Employee Availability Report" onmousemove="window.status='Generate Employee Availability Report'"><img id="img108" src="icons/1.gif" class="p"> <span id="l108" class="unselected">Generate Employee Availability Report</span></a></nobr></div>
+<div id="d108" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description12.html" onclick="return LinkClick('109',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l109" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps12.html" onclick="return LinkClick('110',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l110" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites12.html" onclick="return LinkClick('111',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l111" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise12.html" onclick="return LinkClick('112',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l112" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary12.html" onclick="return LinkClick('113',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l113" class="unselected">Summary</span></a></nobr></div>
+</div></div><div><nobr><a href="#" onClick="return NodeClick('114')"><img id="imgn114" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('114',true,false)" onDblClick="return LinkDblClick('114')" target="content" title="Supplier Order Instructions" onmousemove="window.status='Supplier Order Instructions'"><img id="img114" src="icons/1.gif" class="p"> <span id="l114" class="unselected">Supplier Order Instructions</span></a></nobr></div>
+<div id="d114" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/generate-supplier-order.html" onclick="return LinkClick('115',false,true)" target="content" title="Generate Supplier Order" onmousemove="window.status='Generate Supplier Order'"><img src="icons/11.gif" class="p"> <span id="l115" class="unselected">Generate Supplier Order</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-supplier-order.html" onclick="return LinkClick('116',false,true)" target="content" title="Search and Delete Supplier Order" onmousemove="window.status='Search and Delete Supplier Order'"><img src="icons/11.gif" class="p"> <span id="l116" class="unselected">Search and Delete Supplier Order</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('117')"><img id="imgn117" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('117',true,false)" onDblClick="return LinkDblClick('117')" target="content" title="Incident Instructions" onmousemove="window.status='Incident Instructions'"><img id="img117" src="icons/1.gif" class="p"> <span id="l117" class="unselected">Incident Instructions</span></a></nobr></div>
+<div id="d117" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-incident.html" onclick="return LinkClick('118',false,true)" target="content" title="Add New Incident" onmousemove="window.status='Add New Incident'"><img src="icons/11.gif" class="p"> <span id="l118" class="unselected">Add New Incident</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-incident.html" onclick="return LinkClick('119',false,true)" target="content" title="Update Incident" onmousemove="window.status='Update Incident'"><img src="icons/11.gif" class="p"> <span id="l119" class="unselected">Update Incident</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-incident.html" onclick="return LinkClick('120',false,true)" target="content" title="Search and Delete Incident" onmousemove="window.status='Search and Delete Incident'"><img src="icons/11.gif" class="p"> <span id="l120" class="unselected">Search and Delete Incident</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('121')"><img id="imgn121" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('121',true,false)" onDblClick="return LinkDblClick('121')" target="content" title="Supplier Instructions" onmousemove="window.status='Supplier Instructions'"><img id="img121" src="icons/1.gif" class="p"> <span id="l121" class="unselected">Supplier Instructions</span></a></nobr></div>
+<div id="d121" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-supplier.html" onclick="return LinkClick('122',false,true)" target="content" title="Add New Supplier" onmousemove="window.status='Add New Supplier'"><img src="icons/11.gif" class="p"> <span id="l122" class="unselected">Add New Supplier</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-supplier.html" onclick="return LinkClick('123',false,true)" target="content" title="Update Supplier" onmousemove="window.status='Update Supplier'"><img src="icons/11.gif" class="p"> <span id="l123" class="unselected">Update Supplier</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-supplier.html" onclick="return LinkClick('124',false,true)" target="content" title="Search and Delete Supplier" onmousemove="window.status='Search and Delete Supplier'"><img src="icons/11.gif" class="p"> <span id="l124" class="unselected">Search and Delete Supplier</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('125',false,true)" target="content" title="Add New Supplier Type" onmousemove="window.status='Add New Supplier Type'"><img src="icons/11.gif" class="p"> <span id="l125" class="unselected">Add New Supplier Type</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-supplier-type.html" onclick="return LinkClick('126',false,true)" target="content" title="Update Supplier Type" onmousemove="window.status='Update Supplier Type'"><img src="icons/11.gif" class="p"> <span id="l126" class="unselected">Update Supplier Type</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-supplier-type.html" onclick="return LinkClick('127',false,true)" target="content" title="Search and Delete Supplier Type" onmousemove="window.status='Search and Delete Supplier Type'"><img src="icons/11.gif" class="p"> <span id="l127" class="unselected">Search and Delete Supplier Type</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('128')"><img id="imgn128" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('128',true,false)" onDblClick="return LinkDblClick('128')" target="content" title="Project Instructions" onmousemove="window.status='Project Instructions'"><img id="img128" src="icons/1.gif" class="p"> <span id="l128" class="unselected">Project Instructions</span></a></nobr></div>
+<div id="d128" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('129',false,true)" target="content" title="Add New Project" onmousemove="window.status='Add New Project'"><img src="icons/11.gif" class="p"> <span id="l129" class="unselected">Add New Project</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-project.html" onclick="return LinkClick('130',false,true)" target="content" title="Update Project" onmousemove="window.status='Update Project'"><img src="icons/11.gif" class="p"> <span id="l130" class="unselected">Update Project</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('131',false,true)" target="content" title="Search and Delete Project" onmousemove="window.status='Search and Delete Project'"><img src="icons/11.gif" class="p"> <span id="l131" class="unselected">Search and Delete Project</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-safety-checklist-item.html" onclick="return LinkClick('132',false,true)" target="content" title="Add New Safety Checklist Item" onmousemove="window.status='Add New Safety Checklist Item'"><img src="icons/11.gif" class="p"> <span id="l132" class="unselected">Add New Safety Checklist Item</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-safety-checklist-item.html" onclick="return LinkClick('133',false,true)" target="content" title="Update Safety Checklist Item" onmousemove="window.status='Update Safety Checklist Item'"><img src="icons/11.gif" class="p"> <span id="l133" class="unselected">Update Safety Checklist Item</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('134',false,true)" target="content" title="Search and Delete Safety Checklist Item" onmousemove="window.status='Search and Delete Safety Checklist Item'"><img src="icons/11.gif" class="p"> <span id="l134" class="unselected">Search and Delete Safety Checklist Item</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-safety-checklist.html" onclick="return LinkClick('135',false,true)" target="content" title="Add New Safety Checklist" onmousemove="window.status='Add New Safety Checklist'"><img src="icons/11.gif" class="p"> <span id="l135" class="unselected">Add New Safety Checklist</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-safety-checklist.html" onclick="return LinkClick('136',false,true)" target="content" title="Update Safety Checklist" onmousemove="window.status='Update Safety Checklist'"><img src="icons/11.gif" class="p"> <span id="l136" class="unselected">Update Safety Checklist</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-safety-checklist.html" onclick="return LinkClick('137',false,true)" target="content" title="Search and Delete Safety Checklist" onmousemove="window.status='Search and Delete Safety Checklist'"><img src="icons/11.gif" class="p"> <span id="l137" class="unselected">Search and Delete Safety Checklist</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-project-employee.html" onclick="return LinkClick('138',false,true)" target="content" title="Add New Project Employee" onmousemove="window.status='Add New Project Employee'"><img src="icons/11.gif" class="p"> <span id="l138" class="unselected">Add New Project Employee</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('139',false,true)" target="content" title="Update Project Employee" onmousemove="window.status='Update Project Employee'"><img src="icons/11.gif" class="p"> <span id="l139" class="unselected">Update Project Employee</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-project-employee.html" onclick="return LinkClick('140',false,true)" target="content" title="Search and Delete Project Employee" onmousemove="window.status='Search and Delete Project Employee'"><img src="icons/11.gif" class="p"> <span id="l140" class="unselected">Search and Delete Project Employee</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-task.html" onclick="return LinkClick('141',false,true)" target="content" title="Add New Task" onmousemove="window.status='Add New Task'"><img src="icons/11.gif" class="p"> <span id="l141" class="unselected">Add New Task</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-task.html" onclick="return LinkClick('142',false,true)" target="content" title="Update Task" onmousemove="window.status='Update Task'"><img src="icons/11.gif" class="p"> <span id="l142" class="unselected">Update Task</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('143',false,true)" target="content" title="Search and Delete Task" onmousemove="window.status='Search and Delete Task'"><img src="icons/11.gif" class="p"> <span id="l143" class="unselected">Search and Delete Task</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-task-type.html" onclick="return LinkClick('144',false,true)" target="content" title="Add New Task Type" onmousemove="window.status='Add New Task Type'"><img src="icons/11.gif" class="p"> <span id="l144" class="unselected">Add New Task Type</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-task-type.html" onclick="return LinkClick('145',false,true)" target="content" title="Update Task Type" onmousemove="window.status='Update Task Type'"><img src="icons/11.gif" class="p"> <span id="l145" class="unselected">Update Task Type</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-task-type.html" onclick="return LinkClick('146',false,true)" target="content" title="Search and Delete Task Type" onmousemove="window.status='Search and Delete Task Type'"><img src="icons/11.gif" class="p"> <span id="l146" class="unselected">Search and Delete Task Type</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('147')"><img id="imgn147" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('147',true,false)" onDblClick="return LinkDblClick('147')" target="content" title="Upload Delivery Note" onmousemove="window.status='Upload Delivery Note'"><img id="img147" src="icons/1.gif" class="p"> <span id="l147" class="unselected">Upload Delivery Note</span></a></nobr></div>
+<div id="d147" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description13.html" onclick="return LinkClick('148',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l148" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps13.html" onclick="return LinkClick('149',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l149" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('150',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l150" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise13.html" onclick="return LinkClick('151',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l151" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary13.html" onclick="return LinkClick('152',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l152" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/upload-new-delivery-note.html" onclick="return LinkClick('153',false,true)" target="content" title="Upload New Delivery Note" onmousemove="window.status='Upload New Delivery Note'"><img src="icons/11.gif" class="p"> <span id="l153" class="unselected">Upload New Delivery Note</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('154',false,true)" target="content" title="Search and Delete Delivery Note" onmousemove="window.status='Search and Delete Delivery Note'"><img src="icons/11.gif" class="p"> <span id="l154" class="unselected">Search and Delete Delivery Note</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-project-material.html" onclick="return LinkClick('155',false,true)" target="content" title="Add New Project Material" onmousemove="window.status='Add New Project Material'"><img src="icons/11.gif" class="p"> <span id="l155" class="unselected">Add New Project Material</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-project-material.html" onclick="return LinkClick('156',false,true)" target="content" title="Update Project Material" onmousemove="window.status='Update Project Material'"><img src="icons/11.gif" class="p"> <span id="l156" class="unselected">Update Project Material</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-project-material.html" onclick="return LinkClick('157',false,true)" target="content" title="Search and Delete Project Material" onmousemove="window.status='Search and Delete Project Material'"><img src="icons/11.gif" class="p"> <span id="l157" class="unselected">Search and Delete Project Material</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-project-equipment.html" onclick="return LinkClick('158',false,true)" target="content" title="Add New Project Equipment" onmousemove="window.status='Add New Project Equipment'"><img src="icons/11.gif" class="p"> <span id="l158" class="unselected">Add New Project Equipment</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-project-equipment.html" onclick="return LinkClick('159',false,true)" target="content" title="Update Project Equipment" onmousemove="window.status='Update Project Equipment'"><img src="icons/11.gif" class="p"> <span id="l159" class="unselected">Update Project Equipment</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-project-equipment.html" onclick="return LinkClick('160',false,true)" target="content" title="Search and Delete Project Equipment" onmousemove="window.status='Search and Delete Project Equipment'"><img src="icons/11.gif" class="p"> <span id="l160" class="unselected">Search and Delete Project Equipment</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-construction-site.html" onclick="return LinkClick('161',false,true)" target="content" title="Add New Construction Site" onmousemove="window.status='Add New Construction Site'"><img src="icons/11.gif" class="p"> <span id="l161" class="unselected">Add New Construction Site</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-construction-site.html" onclick="return LinkClick('162',false,true)" target="content" title="Update Construction Site" onmousemove="window.status='Update Construction Site'"><img src="icons/11.gif" class="p"> <span id="l162" class="unselected">Update Construction Site</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-construction-site.html" onclick="return LinkClick('163',false,true)" target="content" title="Search and Delete Construction Site" onmousemove="window.status='Search and Delete Construction Site'"><img src="icons/11.gif" class="p"> <span id="l163" class="unselected">Search and Delete Construction Site</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('164')"><img id="imgn164" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('164',true,false)" onDblClick="return LinkDblClick('164')" target="content" title="Material Request Instructions" onmousemove="window.status='Material Request Instructions'"><img id="img164" src="icons/1.gif" class="p"> <span id="l164" class="unselected">Material Request Instructions</span></a></nobr></div>
+<div id="d164" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-material-request.html" onclick="return LinkClick('165',false,true)" target="content" title="Add New Material Request" onmousemove="window.status='Add New Material Request'"><img src="icons/11.gif" class="p"> <span id="l165" class="unselected">Add New Material Request</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-material-request.html" onclick="return LinkClick('166',false,true)" target="content" title="Update Material Request" onmousemove="window.status='Update Material Request'"><img src="icons/11.gif" class="p"> <span id="l166" class="unselected">Update Material Request</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('167',false,true)" target="content" title="Search and Delete Material Request" onmousemove="window.status='Search and Delete Material Request'"><img src="icons/11.gif" class="p"> <span id="l167" class="unselected">Search and Delete Material Request</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('168',false,true)" target="content" title="Add New Material Request Status" onmousemove="window.status='Add New Material Request Status'"><img src="icons/11.gif" class="p"> <span id="l168" class="unselected">Add New Material Request Status</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-material-request-status.html" onclick="return LinkClick('169',false,true)" target="content" title="Update Material Request Status" onmousemove="window.status='Update Material Request Status'"><img src="icons/11.gif" class="p"> <span id="l169" class="unselected">Update Material Request Status</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('170',false,true)" target="content" title="Search and Delete Material Request Status" onmousemove="window.status='Search and Delete Material Request Status'"><img src="icons/11.gif" class="p"> <span id="l170" class="unselected">Search and Delete Material Request Status</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('171')"><img id="imgn171" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('171',true,false)" onDblClick="return LinkDblClick('171')" target="content" title="Approve Material Request" onmousemove="window.status='Approve Material Request'"><img id="img171" src="icons/1.gif" class="p"> <span id="l171" class="unselected">Approve Material Request</span></a></nobr></div>
+<div id="d171" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('172',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l172" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps14.html" onclick="return LinkClick('173',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l173" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites14.html" onclick="return LinkClick('174',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l174" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise14.html" onclick="return LinkClick('175',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l175" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary14.html" onclick="return LinkClick('176',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l176" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-urgency-level.html" onclick="return LinkClick('177',false,true)" target="content" title="Add New Urgency Level" onmousemove="window.status='Add New Urgency Level'"><img src="icons/11.gif" class="p"> <span id="l177" class="unselected">Add New Urgency Level</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-urgency-level.html" onclick="return LinkClick('178',false,true)" target="content" title="Update Urgency Level" onmousemove="window.status='Update Urgency Level'"><img src="icons/11.gif" class="p"> <span id="l178" class="unselected">Update Urgency Level</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-urgency-level.html" onclick="return LinkClick('179',false,true)" target="content" title="Search and Delete Urgency Level" onmousemove="window.status='Search and Delete Urgency Level'"><img src="icons/11.gif" class="p"> <span id="l179" class="unselected">Search and Delete Urgency Level</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('180')"><img id="imgn180" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('180',true,false)" onDblClick="return LinkDblClick('180')" target="content" title="Client Instructions" onmousemove="window.status='Client Instructions'"><img id="img180" src="icons/1.gif" class="p"> <span id="l180" class="unselected">Client Instructions</span></a></nobr></div>
+<div id="d180" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('181',false,true)" target="content" title="Add New Client" onmousemove="window.status='Add New Client'"><img src="icons/11.gif" class="p"> <span id="l181" class="unselected">Add New Client</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-client.html" onclick="return LinkClick('182',false,true)" target="content" title="Update Client" onmousemove="window.status='Update Client'"><img src="icons/11.gif" class="p"> <span id="l182" class="unselected">Update Client</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('183',false,true)" target="content" title="Search and Delete Client" onmousemove="window.status='Search and Delete Client'"><img src="icons/11.gif" class="p"> <span id="l183" class="unselected">Search and Delete Client</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-client-request.html" onclick="return LinkClick('184',false,true)" target="content" title="Add New Client Request" onmousemove="window.status='Add New Client Request'"><img src="icons/11.gif" class="p"> <span id="l184" class="unselected">Add New Client Request</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('185',false,true)" target="content" title="Update Client Request" onmousemove="window.status='Update Client Request'"><img src="icons/11.gif" class="p"> <span id="l185" class="unselected">Update Client Request</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-client-request.html" onclick="return LinkClick('186',false,true)" target="content" title="Search and Delete Client Request" onmousemove="window.status='Search and Delete Client Request'"><img src="icons/11.gif" class="p"> <span id="l186" class="unselected">Search and Delete Client Request</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('187')"><img id="imgn187" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('187',true,false)" onDblClick="return LinkDblClick('187')" target="content" title="Warehouse Instructions" onmousemove="window.status='Warehouse Instructions'"><img id="img187" src="icons/1.gif" class="p"> <span id="l187" class="unselected">Warehouse Instructions</span></a></nobr></div>
+<div id="d187" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-warehouse.html" onclick="return LinkClick('188',false,true)" target="content" title="Add New Warehouse" onmousemove="window.status='Add New Warehouse'"><img src="icons/11.gif" class="p"> <span id="l188" class="unselected">Add New Warehouse</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-warehouse.html" onclick="return LinkClick('189',false,true)" target="content" title="Update Warehouse" onmousemove="window.status='Update Warehouse'"><img src="icons/11.gif" class="p"> <span id="l189" class="unselected">Update Warehouse</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-and-delete-warehouse.html" onclick="return LinkClick('190',false,true)" target="content" title="Search and Delete Warehouse" onmousemove="window.status='Search and Delete Warehouse'"><img src="icons/11.gif" class="p"> <span id="l190" class="unselected">Search and Delete Warehouse</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('191')"><img id="imgn191" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('191',true,false)" onDblClick="return LinkDblClick('191')" target="content" title="Write-off Material" onmousemove="window.status='Write-off Material'"><img id="img191" src="icons/1.gif" class="p"> <span id="l191" class="unselected">Write-off Material</span></a></nobr></div>
+<div id="d191" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description15.html" onclick="return LinkClick('192',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l192" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps15.html" onclick="return LinkClick('193',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l193" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites15.html" onclick="return LinkClick('194',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l194" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise15.html" onclick="return LinkClick('195',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l195" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary15.html" onclick="return LinkClick('196',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l196" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('197')"><img id="imgn197" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('197',true,false)" onDblClick="return LinkDblClick('197')" target="content" title="Write-off Equipment" onmousemove="window.status='Write-off Equipment'"><img id="img197" src="icons/1.gif" class="p"> <span id="l197" class="unselected">Write-off Equipment</span></a></nobr></div>
+<div id="d197" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description16.html" onclick="return LinkClick('198',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l198" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps16.html" onclick="return LinkClick('199',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l199" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites16.html" onclick="return LinkClick('200',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l200" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise16.html" onclick="return LinkClick('201',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l201" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary16.html" onclick="return LinkClick('202',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l202" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('203')"><img id="imgn203" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('203',true,false)" onDblClick="return LinkDblClick('203')" target="content" title="Complete Stock-Take" onmousemove="window.status='Complete Stock-Take'"><img id="img203" src="icons/1.gif" class="p"> <span id="l203" class="unselected">Complete Stock-Take</span></a></nobr></div>
+<div id="d203" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/description17.html" onclick="return LinkClick('204',false,true)" target="content" title="Description" onmousemove="window.status='Description'"><img src="icons/11.gif" class="p"> <span id="l204" class="unselected">Description</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/steps17.html" onclick="return LinkClick('205',false,true)" target="content" title="Steps" onmousemove="window.status='Steps'"><img src="icons/11.gif" class="p"> <span id="l205" class="unselected">Steps</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/prerequisites17.html" onclick="return LinkClick('206',false,true)" target="content" title="Prerequisites" onmousemove="window.status='Prerequisites'"><img src="icons/11.gif" class="p"> <span id="l206" class="unselected">Prerequisites</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/exercise17.html" onclick="return LinkClick('207',false,true)" target="content" title="Exercise" onmousemove="window.status='Exercise'"><img src="icons/11.gif" class="p"> <span id="l207" class="unselected">Exercise</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/summary17.html" onclick="return LinkClick('208',false,true)" target="content" title="Summary" onmousemove="window.status='Summary'"><img src="icons/11.gif" class="p"> <span id="l208" class="unselected">Summary</span></a></nobr></div>
+</div><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-stock-take.html" onclick="return LinkClick('209',false,true)" target="content" title="Update Stock-Take" onmousemove="window.status='Update Stock-Take'"><img src="icons/11.gif" class="p"> <span id="l209" class="unselected">Update Stock-Take</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-and-delete-stock-take.html" onclick="return LinkClick('210',false,true)" target="content" title="Search and Delete Stock-Take" onmousemove="window.status='Search and Delete Stock-Take'"><img src="icons/11.gif" class="p"> <span id="l210" class="unselected">Search and Delete Stock-Take</span></a></nobr></div>
+</div><script>divlist = [1,3,7,16,17,23,29,35,47,54,58,64,70,77,83,84,90,96,102,108,114,117,121,128,147,164,171,180,187,191,197,203]</script>
+</body>
+</html>
